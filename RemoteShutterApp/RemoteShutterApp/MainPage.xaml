@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:RemoteShutterApp"
              x:Class="RemoteShutterApp.MainPage">
-
-	<Label Text="Welcome to Xamarin.Forms!" 
+    <StackLayout>
+	<Label Text="Remote Shutter App!" 
            VerticalOptions="Center" 
            HorizontalOptions="Center" />
-
+        <Button Text="Take picture" x:Name="TakePictureButton"></Button>
+    </StackLayout>
 </ContentPage>

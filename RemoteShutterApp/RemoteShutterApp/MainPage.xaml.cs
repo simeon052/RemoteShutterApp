@@ -12,6 +12,15 @@ namespace RemoteShutterApp
 		public MainPage()
 		{
 			InitializeComponent();
-		}
-	}
+
+            TakePictureButton.Clicked += async (s, e) =>
+            {
+                var udp = new Lib.UdpHandler("192.168.10.30", 8888);
+                var sentbytes = await udp.SendAsync("s");
+
+                System.Diagnostics.Debug.WriteLine($"{sentbytes} bytes are sent");
+            };
+
+        }
+    }
 }
