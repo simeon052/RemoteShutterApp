@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,7 +24,6 @@ namespace Lib
 
 
         public async Task<int> SendAsync(byte[] data) {
-
             using (var udpClient = new System.Net.Sockets.UdpClient())
             {
                 var result = await udpClient.SendAsync(data, data.Length, host, port).ConfigureAwait(false);
@@ -30,6 +31,55 @@ namespace Lib
                 return result;
             }
         }
+        
+        public static async Task<bool> ShootLumix (string ipaddr)
+        {
 
+            string url = $"http://{ipaddr}/cam.cgi?mode=camcmd&value=capture";
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+            HttpWebResponse response;
+
+            try
+            {
+                response = (HttpWebResponse)request.GetResponse();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                return false;
+            }
+
+
+
+            // Check that the remote file was found. The ContentType
+            // check is performed since a request for a non-existent
+            // image file might be redirected to a 404-page, which would
+            // yield the StatusCode "OK", even though the image was not
+            // found.
+
+            if ((response.StatusCode == HttpStatusCode.OK ||
+                response.StatusCode == HttpStatusCode.Moved ||
+                response.StatusCode == HttpStatusCode.Redirect))
+            {
+
+
+                // if the remote file was found, download it
+                using (Stream inputStream = response.GetResponseStream())
+                using (Stream outputStream = File.OpenWrite(Path.GetTempFileName()))
+                {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    do
+                    {
+                        bytesRead = await inputStream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+                        await outputStream.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
+                    } while (bytesRead != 0);
+                }
+                return true;
+            }
+            else
+                return false;
+        }
     }
 }

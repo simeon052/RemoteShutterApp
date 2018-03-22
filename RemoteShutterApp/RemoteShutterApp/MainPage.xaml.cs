@@ -19,6 +19,8 @@ namespace RemoteShutterApp
                 var sentbytes = await udp.SendAsync("s");
 
                 System.Diagnostics.Debug.WriteLine($"{sentbytes} bytes are sent");
+
+                await Lib.UdpHandler.ShootLumix("192.168.10.19");
             };
 
         }
