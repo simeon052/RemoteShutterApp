@@ -66,15 +66,22 @@ namespace Lib
 
                 // if the remote file was found, download it
                 using (Stream inputStream = response.GetResponseStream())
-                using (Stream outputStream = File.OpenWrite(Path.GetTempFileName()))
+                using (MemoryStream memStream = new MemoryStream())
                 {
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    do
+                    await inputStream.CopyToAsync(memStream);
+                    var resultStr = Encoding.UTF8.GetString(memStream.ToArray());
+                    System.Diagnostics.Debug.WriteLine($"===> {resultStr}");
+
+                    if (resultStr.ToUpper().Contains("OK"))
                     {
-                        bytesRead = await inputStream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-                        await outputStream.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
-                    } while (bytesRead != 0);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+
                 }
                 return true;
             }

@@ -15,12 +15,12 @@ namespace RemoteShutterApp
 
             TakePictureButton.Clicked += async (s, e) =>
             {
-                var udp = new Lib.UdpHandler("192.168.10.30", 8888);
+                var udp = new Lib.UdpHandler(ArduinoIP.Text, int.Parse(ArduinoPort.Text));
                 var sentbytes = await udp.SendAsync("s");
 
                 System.Diagnostics.Debug.WriteLine($"{sentbytes} bytes are sent");
 
-                await Lib.UdpHandler.ShootLumix("192.168.10.19");
+                await Lib.UdpHandler.ShootLumix(DMCIP.Text);
             };
 
         }
